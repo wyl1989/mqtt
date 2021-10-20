@@ -1,13 +1,13 @@
 package com.yurnero.mqtt.ui
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.navigation.fragment.findNavController
-import com.yurnero.mqtt.R
+import androidx.fragment.app.Fragment
 import com.yurnero.mqtt.databinding.FragmentFirstBinding
+import com.yurnero.mqtt.exchange.MessageManager
+import com.yurnero.mqtt.ui.adapter.MessageAdapter
 
 /**
  * A simple [Fragment] subclass as the default destination in the navigation.
@@ -34,8 +34,14 @@ class FirstFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         binding.buttonFirst.setOnClickListener {
-            findNavController().navigate(R.id.action_FirstFragment_to_SecondFragment)
+            MessageManager.getInstance().publishMessage(binding.msg.text.toString())
+            binding.msg.setText("")
         }
+        val adapter = MessageAdapter(arrayListOf())
+        binding.recycleView.adapter = adapter
+        MessageManager.getInstance().getNewMessage()
+            .observe(viewLifecycleOwner, { adapter.newMessage(it) })
+        MessageManager.getInstance().init()
     }
 
     override fun onDestroyView() {
